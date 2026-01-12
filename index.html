@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attorney Workbook | Pre-Meeting Preparation</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #003366;
+  --blue: #0066b3;
+  --light-blue: #e6f0f7;
+  --field-bg: #f5f8fc;
+  --gray: #666;
+  --red: #cc0000;
+  --green: #28a745;
+  --orange: #f0a000;
+  --gold: #d4af37;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f2f5;
+  min-height: 100vh;
+  color: #1a1a1a;
+}
+
+/* PASSWORD GATE */
+#password-gate {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--navy) 0%, #1a4d80 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#password-gate.hidden { display: none; }
+.password-box {
+  background: white;
+  padding: 40px 50px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
+  max-width: 400px;
+}
+.password-box h1 {
+  color: var(--navy);
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.password-box .subtitle {
+  color: var(--gray);
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+.password-box input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #d0d5dd;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+.password-box input:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.password-box button {
+  width: 100%;
+  padding: 14px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.password-box button:hover { background: var(--navy); }
+.password-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 10px;
+  display: none;
+}
+.password-error.show { display: block; }
+.lock-icon { font-size: 48px; margin-bottom: 15px; }
+
+#main-content { display: none; }
+#main-content.visible { display: block; }
+
+.container { max-width: 950px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--navy) 0%, #1a4d80 100%);
+  color: white;
+  padding: 25px 30px;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+}
+.confidential {
+  background: var(--red);
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: inline-block;
+  border-radius: 3px;
+  margin-bottom: 12px;
+}
+.header h1 { font-size: 22px; font-weight: 600; margin-bottom: 5px; }
+.header-sub { font-size: 14px; opacity: 0.85; }
+.case-badge {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  background: rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: right;
+}
+
+/* Strategy Banner */
+.strategy-banner {
+  background: linear-gradient(135deg, var(--gold) 0%, #b8960c 100%);
+  color: #1a1a1a;
+  padding: 20px 25px;
+  border-bottom: 3px solid var(--navy);
+}
+.strategy-banner h2 { font-size: 16px; margin-bottom: 10px; }
+.strategy-banner .objectives {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+.objective-box {
+  background: rgba(255,255,255,0.9);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+.objective-box .num {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.objective-box .label { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+/* Progress */
+.progress-container {
+  background: white;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e0e0e0;
+}
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+.progress-step .step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+.progress-step.active .step-num { background: var(--blue); color: white; }
+.progress-step.completed .step-num { background: var(--green); color: white; }
+.progress-step .step-label {
+  font-size: 10px;
+  color: var(--gray);
+  margin-top: 5px;
+  text-align: center;
+  max-width: 80px;
+}
+.progress-step.active .step-label { color: var(--blue); font-weight: 600; }
+
+/* Form */
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sections */
+.section-header {
+  background: var(--navy);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.section-num {
+  background: white;
+  color: var(--navy);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  margin-right: 12px;
+}
+.section-header h2 { font-size: 15px; font-weight: 600; }
+.subsection { margin-bottom: 25px; }
+.subsection-title {
+  color: var(--blue);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--light-blue);
+}
+
+/* Form Elements */
+label { display: block; font-weight: 500; font-size: 13px; margin-bottom: 6px; color: #333; }
+input[type="text"], input[type="date"], textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--field-bg);
+  transition: all 0.2s;
+}
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0, 102, 179, 0.1);
+}
+textarea { min-height: 80px; resize: vertical; }
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.field-group { margin-bottom: 15px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+@media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+/* Carrot Banner */
+.carrot-banner {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+  border: 2px solid var(--orange);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.carrot-icon { font-size: 40px; }
+.carrot-text h3 { color: #856404; font-size: 16px; margin-bottom: 5px; }
+.carrot-text p { font-size: 13px; color: #664d03; }
+
+/* Impeachment Box */
+.impeach-box {
+  background: linear-gradient(135deg, #fef3f3 0%, #ffe8e8 100%);
+  border: 2px solid var(--red);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.impeach-box h4 { color: #8b0000; margin-bottom: 15px; font-size: 15px; }
+
+/* Discovery Box */
+.discovery-box {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.discovery-box h4 { color: #2e7d32; margin-bottom: 15px; font-size: 15px; }
+
+/* Checklist */
+.checklist-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border: 1px solid #eee;
+}
+.checklist-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  accent-color: var(--green);
+}
+.checklist-item label { margin: 0; cursor: pointer; flex: 1; font-size: 13px; }
+
+/* Compact Table */
+.compact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+.compact-table th {
+  background: var(--navy);
+  color: white;
+  padding: 10px 8px;
+  text-align: left;
+  font-weight: 600;
+}
+.compact-table td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+.compact-table tr:nth-child(even) { background: #fafbfc; }
+.compact-table input, .compact-table textarea {
+  font-size: 11px;
+  padding: 6px 8px;
+  min-height: auto;
+}
+.compact-table textarea { min-height: 50px; }
+.scenario-num {
+  background: var(--navy);
+  color: white;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Intelligence Grid */
+.intel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+.intel-card {
+  background: var(--field-bg);
+  border-radius: 8px;
+  padding: 15px;
+  border-left: 4px solid var(--blue);
+}
+.intel-card h5 { color: var(--navy); font-size: 13px; margin-bottom: 8px; }
+
+/* Workload Bomb */
+.workload-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.workload-item {
+  background: white;
+  border: 2px solid var(--light-blue);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.workload-item input { width: 18px; height: 18px; accent-color: var(--green); }
+.workload-item .details { flex: 1; }
+.workload-item .title { font-weight: 600; font-size: 13px; }
+.workload-item .desc { font-size: 11px; color: var(--gray); }
+
+/* Nav */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+.btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-prev { background: white; color: var(--gray); border: 1px solid #d0d5dd; }
+.btn-prev:hover { background: #f5f5f5; }
+.btn-next { background: var(--blue); color: white; }
+.btn-next:hover { background: var(--navy); }
+.btn-export { background: var(--green); color: white; }
+
+/* Print */
+@media print {
+  .progress-container, .nav-buttons, .strategy-banner { display: none; }
+  .page { display: block !important; page-break-after: always; }
+  #password-gate { display: none !important; }
+}
+
+.autosave { position: fixed; bottom: 20px; right: 20px; background: var(--green); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; opacity: 0; transition: opacity 0.3s; }
+.autosave.show { opacity: 1; }
+
+/* Attorney Hints */
+.hint-box {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: 2px dashed #1976d2;
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin: 15px 0;
+  position: relative;
+}
+.hint-box::before {
+  content: '💡 GUIDANCE';
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: #1976d2;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.hint-box p { font-size: 13px; color: #0d47a1; margin: 5px 0; }
+.hint-box strong { color: #b71c1c; }
+.hint-box ul { margin: 8px 0 0 20px; font-size: 12px; color: #1565c0; }
+.hint-box li { margin: 4px 0; }
+
+.warning-box {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border: 2px solid #c62828;
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin: 15px 0;
+}
+.warning-box h4 { color: #b71c1c; font-size: 14px; margin-bottom: 8px; }
+.warning-box p { font-size: 12px; color: #c62828; }
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="password-gate">
+  <div class="password-box">
+    <div class="lock-icon">🔒</div>
+    <h1>Secure Document</h1>
+    <p class="subtitle">Enter access code to continue</p>
+    <input type="password" id="password-input" placeholder="Access Code" autofocus>
+    <button onclick="checkPassword()">Access Document</button>
+    <p class="password-error" id="password-error">Incorrect code. Please try again.</p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT (hidden until password entered) -->
+<div id="main-content">
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <span class="confidential">PRIVILEGED & CONFIDENTIAL — ATTORNEY WORK PRODUCT</span>
+    <h1>Attorney Workbook — Pre-Meeting Preparation</h1>
+    <div class="header-sub">Complete this workbook BEFORE the January 14, 2026 meeting</div>
+    <div class="case-badge">
+      <strong>US v. Redmond</strong><br>
+      EDPA 24-376
+    </div>
+  </div>
+
+  <!-- Strategy Banner -->
+  <div class="strategy-banner">
+    <h2>TRUE MEETING OBJECTIVES (Proffer = Carrot Only)</h2>
+    <div class="objectives">
+      <div class="objective-box">
+        <div class="num">1</div>
+        <div class="label">GET CONTINUANCE<br>(As Long As Possible)</div>
+      </div>
+      <div class="objective-box">
+        <div class="num">2</div>
+        <div class="label">FEEL OUT POSITION<br>(Intel Gathering)</div>
+      </div>
+      <div class="objective-box">
+        <div class="num">3</div>
+        <div class="label">MAKE NERVOUS<br>(Groff + Discovery)</div>
+      </div>
+      <div class="objective-box">
+        <div class="num">4</div>
+        <div class="label">WORKLOAD BOMB<br>(Brady/Giglio/302s)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-step active" data-page="1"><span class="step-num">1</span><span class="step-label">Objectives</span></div>
+      <div class="progress-step" data-page="2"><span class="step-num">2</span><span class="step-label">Groff Attack</span></div>
+      <div class="progress-step" data-page="3"><span class="step-num">3</span><span class="step-label">Discovery</span></div>
+      <div class="progress-step" data-page="4"><span class="step-num">4</span><span class="step-label">Scenarios</span></div>
+      <div class="progress-step" data-page="5"><span class="step-num">5</span><span class="step-label">Intel & Auth</span></div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-container">
+
+    <!-- PAGE 1: OBJECTIVES -->
+    <div class="page active" data-page="1">
+      <div class="section-header">
+        <span class="section-num">1</span>
+        <h2>MEETING OBJECTIVES & CARROT STRATEGY</h2>
+      </div>
+
+      <!-- Carrot Banner -->
+      <div class="carrot-banner">
+        <div class="carrot-icon">🥕</div>
+        <div class="carrot-text">
+          <h3>THE PROFFER IS THE CARROT — NOT THE GOAL</h3>
+          <p>We are <strong>NEVER</strong> doing a proffer. We dangle cooperation to extract: continuance, intel on their position, discovery, and to create workload burden. That's it.</p>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <h4>⚠️ CRITICAL — READ BEFORE PROCEEDING</h4>
+        <p>Do NOT agree to any proffer. Do NOT share client's version of events. Do NOT make concessions on intent, knowledge, or control. The ONLY goal is to secure a continuance (<strong>12 MONTHS primary, 6 MONTHS fallback, 90 DAYS walk-away floor</strong>) and gather intel. Everything else is leverage positioning.</p>
+      </div>
+
+      <div class="hint-box">
+        <p><strong>What success looks like:</strong> We leave with a continuance of <strong>6-12 MONTHS</strong>, a discovery schedule commitment, and intelligence on their trial posture—without giving them anything substantive.</p>
+        <ul>
+          <li>If they push for proffer → Deflect: "We need to see discovery first"</li>
+          <li>If they offer only 30-90 days → Counter: <strong>"This case has MORE discovery than January 6 Capitol cases, which got 12-24 month delays"</strong></li>
+          <li>If they're cocky about Groff → Note it, signal credibility concerns, but don't reveal our attack</li>
+        </ul>
+        <p style="margin-top: 10px; background: #fff8e1; padding: 8px; border-radius: 6px;"><strong>💡 PRECEDENT TO CITE:</strong> January 6 Capitol cases had 17-40 TB of evidence. Government said it was "unprecedented." Courts granted 12-24+ month delays. OUR case has millions of WAV files + hundreds of thousands of documents. We warrant AT LEAST the same.</p>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Meeting Date</label>
+          <input type="text" name="meeting_date" value="Wednesday, January 14, 2026">
+        </div>
+        <div class="field-group">
+          <label>Current Trial Date</label>
+          <input type="text" name="current_trial" value="April 2026">
+        </div>
+        <div class="field-group">
+          <label>Target Continuance</label>
+          <input type="text" name="target_continuance" placeholder="April 2027 (12 months)" value="April 2027 (12 months from current date)">
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">OBJECTIVE 1: Continuance (Primary)</div>
+        <div class="hint-box">
+          <p><strong>🎯 TARGET: 12 MONTHS (April 2027) | FALLBACK: 6 MONTHS (October 2026) | FLOOR: 90 DAYS</strong></p>
+          <p><strong>DO NOT accept 30-45 days. Counter with precedent:</strong></p>
+          <ul style="margin: 8px 0;">
+            <li><strong>January 6 cases:</strong> 17-40 TB = 12-24 month delays granted</li>
+            <li><strong>US v. Gordon:</strong> Hundreds of thousands of docs = complexity designation upheld</li>
+            <li><strong>US v. Lewis:</strong> 90 days excludable for voluminous discovery</li>
+            <li><strong>Our case:</strong> MILLIONS of calls + hundreds of thousands of docs = MORE than Jan 6</li>
+          </ul>
+          <p><strong>Mathematical reality:</strong> Audio review = 3x real-time. Millions of calls is IMPOSSIBLE in months. Even sampling protocol requires 6+ months. Investigation asymmetry: Gov't had 2.5 YEARS; defense has had months.</p>
+        </div>
+        <div class="field-group">
+          <label>Minimum acceptable continuance duration</label>
+          <input type="text" name="min_continuance" placeholder="e.g., 12 MONTHS primary (April 2027), 6 MONTHS fallback, 90 DAYS floor" value="12 months (April 2027) primary; 6 months (October 2026) fallback; 90 days floor">
+        </div>
+        <div class="field-group">
+          <label>Justification talking points</label>
+          <textarea name="continuance_justification" placeholder="- Voluminous discovery (27 counts)&#10;- Expert witness retention&#10;- Complexity of superseding indictment&#10;- Need to review Groff materials"></textarea>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="subsection">
+          <div class="subsection-title">OBJECTIVE 2: Intel Gathering</div>
+          <textarea name="intel_goals" placeholder="What do we want to learn?&#10;- How confident are they with Groff?&#10;- What's their trial posture?&#10;- Are they open to negotiation?&#10;- What do they think they have?"></textarea>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">Walk-Away Line</div>
+          <textarea name="walk_away" placeholder="When do we end the meeting?&#10;- Continuance < 60 days&#10;- Demand proffer today&#10;- Refuse discovery discussion"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: GROFF ATTACK -->
+    <div class="page" data-page="2">
+      <div class="section-header">
+        <span class="section-num">2</span>
+        <h2>GROFF IMPEACHMENT — MAKE THEM NERVOUS</h2>
+      </div>
+
+      <div class="impeach-box">
+        <h4>GROFF IS A TAINTED, IMPEACHABLE COOPERATOR</h4>
+        <p style="font-size: 13px; margin-bottom: 15px;">The government is likely cocky now they have Groff. We need to signal that Groff is a liability, not an asset. Plant seeds of doubt without revealing our full hand.</p>
+      </div>
+
+      <div class="hint-box">
+        <p><strong>Strategy:</strong> Signal concern about Groff's credibility WITHOUT revealing specific attack vectors.</p>
+        <ul>
+          <li>Say: "We have significant concerns about your cooperator that will be fully explored at trial."</li>
+          <li>Say: "You may want to re-evaluate his reliability before anchoring your case to him."</li>
+          <li><strong>DO NOT</strong> reveal: specific inconsistencies, documentary contradictions, or our Franks arguments</li>
+        </ul>
+        <p style="margin-top: 10px;"><strong>Key Groff weaknesses to have in mind:</strong> discipline history, pay disputes, blame-shift motive, incentive bias from cooperation deal, prior inconsistent statements.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Groff Impeachment Points (Signal These)</div>
+        <div class="checklist-item">
+          <input type="checkbox" id="groff1" name="groff_point_1">
+          <label for="groff1"><strong>Credibility issues:</strong> Prior inconsistent statements, lies, self-interest</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="groff2" name="groff_point_2">
+          <label for="groff2"><strong>Motive to fabricate:</strong> Cooperation deal, reduced exposure, revenge</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="groff3" name="groff_point_3">
+          <label for="groff3"><strong>Criminal history/character:</strong> Prior bad acts admissible for impeachment</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="groff4" name="groff_point_4">
+          <label for="groff4"><strong>Contradictions with documents:</strong> His story vs. the paper trail</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="groff5" name="groff_point_5">
+          <label for="groff5"><strong>Leon preemption issues:</strong> Tainted source for warrant affidavit</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="groff6" name="groff_point_6">
+          <label for="groff6"><strong>Affidavit omissions:</strong> Material facts left out that exculpate defendant</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Specific Groff vulnerabilities to mention (without revealing full attack)</label>
+        <textarea name="groff_vulnerabilities" placeholder="What can we hint at to make them worry about relying on Groff?&#10;&#10;e.g., 'We have significant concerns about your cooperator's credibility that will be fully explored at trial...'"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Questions to ask about Groff materials</label>
+        <textarea name="groff_questions" placeholder="- When can we see Groff's 302s?&#10;- What proffer sessions has he done?&#10;- Has he testified before the grand jury?&#10;- What's his cooperation agreement status?"></textarea>
+      </div>
+    </div>
+
+    <!-- PAGE 3: DISCOVERY PRESSURE -->
+    <div class="page" data-page="3">
+      <div class="section-header">
+        <span class="section-num">3</span>
+        <h2>DISCOVERY PRESSURE — WORKLOAD BOMB</h2>
+      </div>
+
+      <div class="discovery-box">
+        <h4>FORCE DISCOVERY COMPLETENESS + PRODUCTION SCHEDULE</h4>
+        <p style="font-size: 13px;">Use this meeting to demand comprehensive discovery with date-certain checkpoints. This creates leverage, reveals weaknesses, and justifies the continuance.</p>
+      </div>
+
+      <div class="hint-box">
+        <p><strong>Key Questions to Ask (Pin Them Down):</strong></p>
+        <ul>
+          <li>"Is Brady and Giglio production complete as of today?"</li>
+          <li>"Are all agent rough notes preserved for every 302?"</li>
+          <li>"Are there additional versions or drafts of 302s beyond what's produced?"</li>
+          <li>"What is your methodology for selecting calls cited in the affidavit?"</li>
+        </ul>
+        <p style="margin-top: 10px;"><strong>What DOJ hates producing:</strong> Giglio/benefits for cooperators, agent rough notes, call selection methodology, full calls (not clips).</p>
+        <p><strong>Demand a schedule:</strong> Day 10 (302s), Day 20 (AOPC backup), Day 30 (Brady core), Day 45 (natives), Day 60 (completeness cert).</p>
+        <p style="margin-top: 10px; background: #fff8e1; padding: 8px; border-radius: 6px;"><strong>💡 CASE LAW BACKUP:</strong><br>
+        • <em>US v. Sayler</em> — Gov't can't dump 600K docs and claim Brady compliance<br>
+        • <em>US v. Bagley</em> — Brady must be disclosed in time to use effectively (months, not days)<br>
+        • Our case: Millions of files is WORSE than Sayler</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Discovery Demands Checklist (Raise All)</div>
+        <div class="workload-grid">
+          <div class="workload-item">
+            <input type="checkbox" name="demand_302s">
+            <div class="details">
+              <div class="title">All FBI 302s</div>
+              <div class="desc">Every interview report, including Groff</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_brady">
+            <div class="details">
+              <div class="title">Brady Material</div>
+              <div class="desc">All exculpatory evidence</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_giglio">
+            <div class="details">
+              <div class="title">Giglio Material</div>
+              <div class="desc">Witness impeachment info</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_notes">
+            <div class="details">
+              <div class="title">FBI Agent Notes</div>
+              <div class="desc">Raw notes from all interviews</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_groff_proffer">
+            <div class="details">
+              <div class="title">Groff Proffer Materials</div>
+              <div class="desc">All proffer session records</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_groff_deal">
+            <div class="details">
+              <div class="title">Groff Cooperation Agreement</div>
+              <div class="desc">Full terms of his deal</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_warrant">
+            <div class="details">
+              <div class="title">Warrant Affidavit Backup</div>
+              <div class="desc">All underlying documentation</div>
+            </div>
+          </div>
+          <div class="workload-item">
+            <input type="checkbox" name="demand_communications">
+            <div class="details">
+              <div class="title">All Communications</div>
+              <div class="desc">Emails, texts, call logs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Specific discovery items to emphasize</label>
+        <textarea name="specific_discovery" placeholder="What specific documents are most important to demand?&#10;&#10;- Groff's grand jury testimony&#10;- Agent rough notes (not just 302s)&#10;- All documents showing Redmond compliance/good faith"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Timeline demands</label>
+        <textarea name="discovery_timeline" placeholder="When do we need this by? Create urgency.&#10;&#10;e.g., 'We need all Brady/Giglio within 30 days or we'll file motion to compel'"></textarea>
+      </div>
+    </div>
+
+    <!-- PAGE 4: SCENARIOS (CONDENSED) -->
+    <div class="page" data-page="4">
+      <div class="section-header">
+        <span class="section-num">4</span>
+        <h2>GOVERNMENT POSITIONS & RESPONSES</h2>
+      </div>
+
+      <p style="font-size: 13px; color: var(--gray); margin-bottom: 15px;">Anticipated government statements and our prepared responses. Remember: we're here for continuance + intel, NOT to actually proffer.</p>
+
+      <div class="hint-box">
+        <p><strong>DO-NOT-SAY LIST:</strong></p>
+        <ul>
+          <li>❌ "We haven't reviewed discovery yet" → ✅ "We are mid-review; production is incomplete"</li>
+          <li>❌ "We need time to figure out what happened" → ✅ "We need time to litigate targeted motions based on known defects"</li>
+          <li>❌ "We're considering cooperation" → Only if explicitly framed and authorized</li>
+          <li>❌ Anything conceding intent, knowledge, control, or victim harm</li>
+        </ul>
+      </div>
+
+      <div class="warning-box">
+        <h4>⚠️ IF THEY DEMAND PROFFER TODAY</h4>
+        <p>Response: "We're not prepared to proffer without complete discovery. Let's focus on the continuance and production schedule. We can revisit cooperation discussions once we've had adequate time to review."</p>
+      </div>
+
+      <table class="compact-table">
+        <thead>
+          <tr>
+            <th style="width: 5%">#</th>
+            <th style="width: 35%">If Government Says...</th>
+            <th style="width: 60%">Our Response</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="scenario-num">1</span></td>
+            <td>"No continuance without proffer"</td>
+            <td><textarea name="resp_1" placeholder="Redirect: 'We're happy to discuss cooperation framework, but need adequate time to prepare. Let's establish timeline...'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">2</span></td>
+            <td>"Only 30/60/90 days"</td>
+            <td><textarea name="resp_2" placeholder="'This case has MORE discovery than January 6 Capitol cases which got 12-24 month delays. We have millions of audio files—mathematically impossible to review in months. We need 12 months minimum, 6 months fallback.'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">3</span></td>
+            <td>"We have Groff - don't need you"</td>
+            <td><textarea name="resp_3" placeholder="Signal Groff problems: 'You may want to evaluate your cooperator's credibility more carefully before trial...'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">4</span></td>
+            <td>"Proffer today or nothing"</td>
+            <td><textarea name="resp_4" placeholder="'We're not prepared to proffer without seeing discovery. Let's focus on the continuance.'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">5</span></td>
+            <td>"Standard Queen for a Day only"</td>
+            <td><textarea name="resp_5" placeholder="Stall: 'We'll need to review any proposed agreement carefully. Can you send written terms?'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">6</span></td>
+            <td>"What can your client offer?"</td>
+            <td><textarea name="resp_6" placeholder="Vague carrot: 'Potentially significant information, but we need to see what you have first...'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">7</span></td>
+            <td>"Trial proceeds in April"</td>
+            <td><textarea name="resp_7" placeholder="Raise discovery issues: 'We'll need all Brady/Giglio immediately then. And we're filing Franks...'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">8</span></td>
+            <td>"What about cooperation credit?"</td>
+            <td><textarea name="resp_8" placeholder="Deflect: 'Let's see what the evidence shows first. We have concerns about the affidavit...'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">9</span></td>
+            <td>"We need him to testify against X"</td>
+            <td><textarea name="resp_9" placeholder="'That's a significant ask. We'd need substantial consideration. Let's discuss continuance first.'"></textarea></td>
+          </tr>
+          <tr>
+            <td><span class="scenario-num">10</span></td>
+            <td>"What's your client's version?"</td>
+            <td><textarea name="resp_10" placeholder="DO NOT ANSWER. 'We're not prepared to proffer today. Let's establish a framework first.'"></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="field-group">
+        <label>Other scenarios to prepare for</label>
+        <textarea name="other_scenarios" placeholder="What else might they say? How do we respond while staying on objective?"></textarea>
+      </div>
+    </div>
+
+    <!-- PAGE 5: INTEL & AUTHORIZATION -->
+    <div class="page" data-page="5">
+      <div class="section-header">
+        <span class="section-num">5</span>
+        <h2>INTELLIGENCE GATHERING & AUTHORIZATION</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Questions to Ask (Intel Gathering)</div>
+        <div class="intel-grid">
+          <div class="intel-card">
+            <h5>Their Trial Posture</h5>
+            <textarea name="intel_trial" placeholder="- How set are they on April trial?&#10;- Open to resolution?&#10;- Confident or nervous?"></textarea>
+          </div>
+          <div class="intel-card">
+            <h5>Groff Reliance</h5>
+            <textarea name="intel_groff" placeholder="- How central is Groff?&#10;- What has he given them?&#10;- Any hesitation about him?"></textarea>
+          </div>
+          <div class="intel-card">
+            <h5>Discovery Status</h5>
+            <textarea name="intel_discovery" placeholder="- What's still outstanding?&#10;- Timeline for production?&#10;- Brady/Giglio timing?"></textarea>
+          </div>
+          <div class="intel-card">
+            <h5>Negotiation Signals</h5>
+            <textarea name="intel_negotiate" placeholder="- Any flexibility on charges?&#10;- Sentencing expectations?&#10;- Open to alternatives?"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Meeting Logistics</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Location</label>
+            <input type="text" name="location" placeholder="US Attorney's Office, EDPA">
+          </div>
+          <div class="field-group">
+            <label>Time</label>
+            <input type="text" name="time">
+          </div>
+          <div class="field-group">
+            <label>AUSA</label>
+            <input type="text" name="ausa">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Client Present?</label>
+            <div style="display: flex; gap: 20px; margin-top: 8px;">
+              <label><input type="radio" name="client_present" value="yes"> Yes</label>
+              <label><input type="radio" name="client_present" value="no"> No (Attorney only)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box" style="margin-bottom: 20px;">
+        <h4>⚠️ WALK-AWAY TRIGGERS</h4>
+        <p>End the meeting if ANY of these occur:</p>
+        <ul style="font-size: 12px; margin: 8px 0 0 20px;">
+          <li>Continuance offered is less than 60 days</li>
+          <li>They demand a proffer today as condition of discussion</li>
+          <li>They refuse to discuss discovery schedule</li>
+          <li>They ask for client's version of events</li>
+        </ul>
+      </div>
+
+      <div class="subsection" style="background: var(--field-bg); padding: 20px; border-radius: 10px; border: 2px solid var(--navy);">
+        <div class="subsection-title" style="border-bottom: none; margin-bottom: 15px;">AUTHORIZATION — ATTORNEY ACKNOWLEDGMENT</div>
+        <p style="font-size: 13px; margin-bottom: 15px;"><strong>By completing this workbook, I acknowledge and agree to the following:</strong></p>
+        <ul style="font-size: 13px; margin-left: 20px; margin-bottom: 15px;">
+          <li><strong>NO PROFFER</strong> — Under no circumstances will a proffer occur</li>
+          <li><strong>NO NARRATIVE OFFERS</strong> — No "tell us generally" discussions</li>
+          <li><strong>NO OFF-RECORD SIDEBARS</strong> — Nothing without client knowledge</li>
+          <li><strong>PRIMARY GOAL: CONTINUANCE</strong> — 12 MONTHS target, 6 MONTHS fallback, 90 DAYS floor (cite January 6 precedent)</li>
+          <li><strong>SECONDARY: INTEL</strong> — Assess their trial posture and Groff reliance</li>
+          <li><strong>NO CONCESSIONS</strong> — Do not concede intent, knowledge, control, or harm</li>
+          <li><strong>NO STRATEGY REVEAL</strong> — Do not reveal Franks attack, Groff impeachment specifics, or defense theory</li>
+        </ul>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Client Signature</label>
+            <input type="text" name="client_sig" placeholder="Type name to authorize">
+          </div>
+          <div class="field-group">
+            <label>Date</label>
+            <input type="date" name="sig_date">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav-buttons">
+      <button class="btn btn-prev" id="prevBtn" onclick="changePage(-1)" style="visibility: hidden;">Previous</button>
+      <span id="pageIndicator">Page 1 of 5</span>
+      <button class="btn btn-next" id="nextBtn" onclick="changePage(1)">Next</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="autosave" id="autosave">Saved</div>
+
+<script>
+// Password protection
+const PASSWORD = 'jan14meeting';
+
+function checkPassword() {
+  const input = document.getElementById('password-input').value;
+  if (input === PASSWORD) {
+    document.getElementById('password-gate').classList.add('hidden');
+    document.getElementById('main-content').classList.add('visible');
+    sessionStorage.setItem('authenticated', 'true');
+  } else {
+    document.getElementById('password-error').classList.add('show');
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+  }
+}
+
+document.getElementById('password-input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') checkPassword();
+});
+
+// Check if already authenticated this session
+if (sessionStorage.getItem('authenticated') === 'true') {
+  document.getElementById('password-gate').classList.add('hidden');
+  document.getElementById('main-content').classList.add('visible');
+}
+
+// Main workbook logic
+let currentPage = 1;
+const totalPages = 5;
+
+function updateUI() {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+    if (parseInt(page.dataset.page) === currentPage) page.classList.add('active');
+  });
+  document.querySelectorAll('.progress-step').forEach(step => {
+    const stepPage = parseInt(step.dataset.page);
+    step.classList.remove('active', 'completed');
+    if (stepPage === currentPage) step.classList.add('active');
+    else if (stepPage < currentPage) step.classList.add('completed');
+  });
+  document.getElementById('prevBtn').style.visibility = currentPage === 1 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('nextBtn');
+  if (currentPage === totalPages) {
+    nextBtn.textContent = 'Export PDF';
+    nextBtn.className = 'btn btn-export';
+    nextBtn.onclick = () => window.print();
+  } else {
+    nextBtn.textContent = 'Next';
+    nextBtn.className = 'btn btn-next';
+    nextBtn.onclick = () => changePage(1);
+  }
+  document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+}
+
+function changePage(direction) {
+  currentPage += direction;
+  if (currentPage < 1) currentPage = 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  updateUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  saveToLocalStorage();
+}
+
+document.querySelectorAll('.progress-step').forEach(step => {
+  step.addEventListener('click', () => {
+    currentPage = parseInt(step.dataset.page);
+    updateUI();
+  });
+});
+
+function saveToLocalStorage() {
+  const formData = {};
+  document.querySelectorAll('input, textarea').forEach(el => {
+    if (el.name) {
+      if (el.type === 'checkbox') formData[el.name] = el.checked;
+      else if (el.type === 'radio') { if (el.checked) formData[el.name] = el.value; }
+      else formData[el.name] = el.value;
+    }
+  });
+  localStorage.setItem('attorneyWorkbookV6', JSON.stringify(formData));
+  const indicator = document.getElementById('autosave');
+  indicator.classList.add('show');
+  setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+function loadFromLocalStorage() {
+  const saved = localStorage.getItem('attorneyWorkbookV6');
+  if (saved) {
+    const formData = JSON.parse(saved);
+    for (const [name, value] of Object.entries(formData)) {
+      const el = document.querySelector(`[name="${name}"]`);
+      if (el) {
+        if (el.type === 'checkbox') el.checked = value;
+        else if (el.type === 'radio') {
+          const radio = document.querySelector(`[name="${name}"][value="${value}"]`);
+          if (radio) radio.checked = true;
+        } else el.value = value;
+      }
+    }
+  }
+}
+
+document.querySelectorAll('input, textarea').forEach(el => {
+  el.addEventListener('input', () => { clearTimeout(window.saveTimeout); window.saveTimeout = setTimeout(saveToLocalStorage, 1000); });
+  el.addEventListener('change', saveToLocalStorage);
+});
+
+loadFromLocalStorage();
+updateUI();
+</script>
+
+</body>
+</html>
