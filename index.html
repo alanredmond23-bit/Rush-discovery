@@ -514,11 +514,12 @@ textarea { min-height: 80px; resize: vertical; }
   <div class="password-box" style="max-width: 450px;">
     <div class="lock-icon">📧</div>
     <h1>Before You Begin</h1>
-    <p class="subtitle">Enter your email to receive a copy of this workbook</p>
+    <p class="subtitle">Enter your information to receive a copy of this workbook</p>
+    <input type="text" id="attorney-name" placeholder="Your Full Name *" required style="margin-bottom: 10px;">
     <input type="email" id="attorney-email" placeholder="Your Email Address *" required>
-    <p style="font-size: 11px; color: #666; margin: 10px 0;">A PDF copy will be sent to you and the client when you export.</p>
+    <p style="font-size: 11px; color: #666; margin: 10px 0;">A copy will be sent to you when you submit.</p>
     <button onclick="captureEmail()">Continue to Workbook</button>
-    <p class="password-error" id="email-error">Please enter a valid email address.</p>
+    <p class="password-error" id="email-error">Please enter your name and a valid email address.</p>
   </div>
 </div>
 
@@ -1024,6 +1025,7 @@ const OWNER_EMAIL = 'alanredmond23@gmail.com';
 const EMAILJS_SERVICE = 'service_3ph2zzt';
 const EMAILJS_TEMPLATE = 'template_b8ezhmf';
 let attorneyEmail = '';
+let attorneyName = '';
 
 function checkPassword() {
   const input = document.getElementById('password-input').value;
@@ -1040,17 +1042,22 @@ function checkPassword() {
 }
 
 function captureEmail() {
+  const nameInput = document.getElementById('attorney-name');
   const emailInput = document.getElementById('attorney-email');
+  const name = nameInput.value.trim();
   const email = emailInput.value.trim();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!email || !emailRegex.test(email)) {
+  if (!name || !email || !emailRegex.test(email)) {
     document.getElementById('email-error').classList.add('show');
-    emailInput.focus();
+    if (!name) nameInput.focus();
+    else emailInput.focus();
     return;
   }
 
+  attorneyName = name;
   attorneyEmail = email;
+  sessionStorage.setItem('attorneyName', name);
   sessionStorage.setItem('attorneyEmail', email);
   document.getElementById('email-gate').classList.add('hidden');
   document.getElementById('main-content').classList.add('visible');
@@ -1072,8 +1079,10 @@ document.getElementById('attorney-email').addEventListener('input', function() {
 if (sessionStorage.getItem('authenticated') === 'true') {
   document.getElementById('password-gate').classList.add('hidden');
   const savedEmail = sessionStorage.getItem('attorneyEmail');
-  if (savedEmail) {
+  const savedName = sessionStorage.getItem('attorneyName');
+  if (savedEmail && savedName) {
     attorneyEmail = savedEmail;
+    attorneyName = savedName;
     document.getElementById('email-gate').classList.add('hidden');
     document.getElementById('main-content').classList.add('visible');
   } else {
@@ -1099,9 +1108,9 @@ function updateUI() {
   document.getElementById('prevBtn').style.visibility = currentPage === 1 ? 'hidden' : 'visible';
   const nextBtn = document.getElementById('nextBtn');
   if (currentPage === totalPages) {
-    nextBtn.textContent = 'Export & Send PDF';
+    nextBtn.textContent = 'Submit';
     nextBtn.className = 'btn btn-export';
-    nextBtn.onclick = exportAndSendPDF;
+    nextBtn.onclick = submitWorkbook;
   } else {
     nextBtn.textContent = 'Next';
     nextBtn.className = 'btn btn-next';
@@ -1140,13 +1149,13 @@ function validateForm() {
   return allValid;
 }
 
-// Export and send PDF via EmailJS (Gmail)
-async function exportAndSendPDF() {
+// Submit workbook via EmailJS (Gmail)
+async function submitWorkbook() {
   if (!validateForm()) return;
 
   const btn = document.getElementById('nextBtn');
   const originalText = btn.textContent;
-  btn.textContent = 'Sending...';
+  btn.textContent = 'Submitting...';
   btn.disabled = true;
 
   // Collect all form data
@@ -1162,6 +1171,7 @@ async function exportAndSendPDF() {
   // Build email content summary
   const emailContent = `
 ATTORNEY WORKBOOK - PRE-MEETING PREPARATION
+Submitted by: ${attorneyName} (${attorneyEmail})
 US v. Redmond | EDPA 24-376
 Generated: ${new Date().toLocaleString()}
 
@@ -1243,30 +1253,32 @@ ATTORNEY WORK PRODUCT - DO NOT DISTRIBUTE
   `.trim();
 
   try {
-    // Send to attorney
+    // Send to attorney (the person who filled it out)
     await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_name: attorneyName,
       to_email: attorneyEmail,
-      to_name: 'Attorney',
       from_name: 'Attorney Workbook',
-      subject: `Attorney Workbook - Pre-Meeting Prep (${new Date().toLocaleDateString()})`,
+      reply_to: OWNER_EMAIL,
+      subject: 'Attorney Workbook - Your Submission',
       message: emailContent
     });
 
-    // Send to owner
+    // Send to owner (Alan)
     await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-      to_email: OWNER_EMAIL,
       to_name: 'Alan',
-      from_name: 'Attorney Workbook',
-      subject: `Attorney Workbook - Pre-Meeting Prep (${new Date().toLocaleDateString()})`,
+      to_email: OWNER_EMAIL,
+      from_name: attorneyName,
+      reply_to: attorneyEmail,
+      subject: `Attorney Workbook Submitted by ${attorneyName}`,
       message: emailContent
     });
 
-    alert(`✅ Workbook sent successfully!\n\nEmailed to:\n• ${attorneyEmail}\n• ${OWNER_EMAIL}`);
+    alert(`✅ Workbook submitted successfully!\n\nEmailed to:\n• ${attorneyName} (${attorneyEmail})\n• ${OWNER_EMAIL}`);
     // Also trigger print for local copy
     window.print();
   } catch (error) {
-    console.error('Export error:', error);
-    alert(`⚠️ Email delivery failed: ${error.text || error.message}\n\nPrinting local copy instead...`);
+    console.error('Submit error:', error);
+    alert(`⚠️ Email delivery failed: ${error.text || error.message}\n\nPlease check your EmailJS template settings.\n\nPrinting local copy instead...`);
     window.print();
   } finally {
     btn.textContent = originalText;
@@ -1275,6 +1287,32 @@ ATTORNEY WORK PRODUCT - DO NOT DISTRIBUTE
 }
 
 function changePage(direction) {
+  // If moving forward, validate current page first
+  if (direction > 0) {
+    const currentPageEl = document.querySelector(`.page[data-page="${currentPage}"]`);
+    const requiredFields = currentPageEl.querySelectorAll('[required]');
+    let allValid = true;
+    let firstInvalid = null;
+
+    requiredFields.forEach(field => {
+      if (!field.value || !field.value.trim()) {
+        field.style.borderColor = 'var(--red)';
+        field.style.backgroundColor = '#fff5f5';
+        allValid = false;
+        if (!firstInvalid) firstInvalid = field;
+      } else {
+        field.style.borderColor = '';
+        field.style.backgroundColor = '';
+      }
+    });
+
+    if (!allValid) {
+      if (firstInvalid) firstInvalid.focus();
+      alert('⚠️ Please complete all required fields (marked with *) before continuing.');
+      return;
+    }
+  }
+
   currentPage += direction;
   if (currentPage < 1) currentPage = 1;
   if (currentPage > totalPages) currentPage = totalPages;
@@ -1285,7 +1323,36 @@ function changePage(direction) {
 
 document.querySelectorAll('.progress-step').forEach(step => {
   step.addEventListener('click', () => {
-    currentPage = parseInt(step.dataset.page);
+    const targetPage = parseInt(step.dataset.page);
+
+    // Only allow going back or to current page without validation
+    if (targetPage <= currentPage) {
+      currentPage = targetPage;
+      updateUI();
+      return;
+    }
+
+    // Going forward - validate all pages up to target
+    for (let p = currentPage; p < targetPage; p++) {
+      const pageEl = document.querySelector(`.page[data-page="${p}"]`);
+      const requiredFields = pageEl.querySelectorAll('[required]');
+      let allValid = true;
+
+      requiredFields.forEach(field => {
+        if (!field.value || !field.value.trim()) {
+          allValid = false;
+        }
+      });
+
+      if (!allValid) {
+        currentPage = p;
+        updateUI();
+        alert('⚠️ Please complete all required fields (marked with *) on each page before skipping ahead.');
+        return;
+      }
+    }
+
+    currentPage = targetPage;
     updateUI();
   });
 });
