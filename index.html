@@ -1012,11 +1012,17 @@ textarea { min-height: 80px; resize: vertical; }
 
 <div class="autosave" id="autosave">Saved</div>
 
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+// Initialize EmailJS
+emailjs.init('UT9X9sjOWuW88ghu1');
+
 // Password protection
 const PASSWORD = 'jan14meeting';
 const OWNER_EMAIL = 'alanredmond23@gmail.com';
-const SUPABASE_URL = 'https://fifybuzwfaegloijrmqb.supabase.co';
+const EMAILJS_SERVICE = 'service_3ph2zzt';
+const EMAILJS_TEMPLATE = 'template_b8ezhmf';
 let attorneyEmail = '';
 
 function checkPassword() {
@@ -1134,7 +1140,7 @@ function validateForm() {
   return allValid;
 }
 
-// Export and send PDF via Supabase Edge Function
+// Export and send PDF via EmailJS (Gmail)
 async function exportAndSendPDF() {
   if (!validateForm()) return;
 
@@ -1147,42 +1153,120 @@ async function exportAndSendPDF() {
   const formData = {};
   document.querySelectorAll('input, textarea').forEach(el => {
     if (el.name) {
-      if (el.type === 'checkbox') formData[el.name] = el.checked;
+      if (el.type === 'checkbox') formData[el.name] = el.checked ? '✓ Yes' : '☐ No';
       else if (el.type === 'radio') { if (el.checked) formData[el.name] = el.value; }
-      else formData[el.name] = el.value;
+      else formData[el.name] = el.value || 'Not provided';
     }
   });
 
-  // Get the HTML content for PDF
-  const mainContent = document.getElementById('main-content').innerHTML;
+  // Build email content summary
+  const emailContent = `
+ATTORNEY WORKBOOK - PRE-MEETING PREPARATION
+US v. Redmond | EDPA 24-376
+Generated: ${new Date().toLocaleString()}
+
+═══════════════════════════════════════
+MEETING OBJECTIVES
+═══════════════════════════════════════
+Meeting Date: ${formData.meeting_date}
+Current Trial: ${formData.current_trial}
+Target Continuance: ${formData.target_continuance}
+Minimum Continuance: ${formData.min_continuance}
+
+Continuance Justification:
+${formData.continuance_justification}
+
+Intel Goals:
+${formData.intel_goals}
+
+Walk-Away Line:
+${formData.walk_away}
+
+═══════════════════════════════════════
+GROFF IMPEACHMENT STRATEGY
+═══════════════════════════════════════
+Groff Points: ${formData.groff_point_1} | ${formData.groff_point_2} | ${formData.groff_point_3} | ${formData.groff_point_4} | ${formData.groff_point_5} | ${formData.groff_point_6}
+
+Groff Vulnerabilities:
+${formData.groff_vulnerabilities}
+
+Questions for Groff Materials:
+${formData.groff_questions}
+
+═══════════════════════════════════════
+DISCOVERY PRESSURE
+═══════════════════════════════════════
+Demands: 302s: ${formData.demand_302s} | Brady: ${formData.demand_brady} | Giglio: ${formData.demand_giglio} | Notes: ${formData.demand_notes} | Proffer: ${formData.demand_groff_proffer} | Deal: ${formData.demand_groff_deal} | Warrant: ${formData.demand_warrant} | Comms: ${formData.demand_communications}
+
+Specific Discovery Items:
+${formData.specific_discovery}
+
+Timeline Demands:
+${formData.discovery_timeline}
+
+═══════════════════════════════════════
+PREPARED RESPONSES
+═══════════════════════════════════════
+#1 "No continuance without proffer": ${formData.resp_1}
+#2 "Only 30/60/90 days": ${formData.resp_2}
+#3 "We have Groff": ${formData.resp_3}
+#4 "Proffer today or nothing": ${formData.resp_4}
+#5 "Standard Queen for a Day": ${formData.resp_5}
+#6 "What can your client offer?": ${formData.resp_6}
+#7 "Trial proceeds in April": ${formData.resp_7}
+#8 "Cooperation credit?": ${formData.resp_8}
+#9 "Testify against X": ${formData.resp_9}
+#10 "Client's version?": ${formData.resp_10}
+
+Other Scenarios:
+${formData.other_scenarios}
+
+═══════════════════════════════════════
+INTEL & AUTHORIZATION
+═══════════════════════════════════════
+Trial Posture Questions: ${formData.intel_trial}
+Groff Reliance Questions: ${formData.intel_groff}
+Discovery Status Questions: ${formData.intel_discovery}
+Negotiation Signals: ${formData.intel_negotiate}
+
+Meeting: ${formData.location} at ${formData.time}
+AUSA: ${formData.ausa}
+Client Present: ${formData.client_present}
+
+Authorization Signature: ${formData.client_sig}
+Date: ${formData.sig_date}
+
+═══════════════════════════════════════
+⚠️ PRIVILEGED & CONFIDENTIAL
+ATTORNEY WORK PRODUCT - DO NOT DISTRIBUTE
+═══════════════════════════════════════
+  `.trim();
 
   try {
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/send-workbook-pdf`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        attorneyEmail: attorneyEmail,
-        ownerEmail: OWNER_EMAIL,
-        formData: formData,
-        htmlContent: mainContent,
-        timestamp: new Date().toISOString()
-      })
+    // Send to attorney
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_email: attorneyEmail,
+      to_name: 'Attorney',
+      from_name: 'Attorney Workbook',
+      subject: `Attorney Workbook - Pre-Meeting Prep (${new Date().toLocaleDateString()})`,
+      message: emailContent
     });
 
-    const result = await response.json();
+    // Send to owner
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_email: OWNER_EMAIL,
+      to_name: 'Alan',
+      from_name: 'Attorney Workbook',
+      subject: `Attorney Workbook - Pre-Meeting Prep (${new Date().toLocaleDateString()})`,
+      message: emailContent
+    });
 
-    if (response.ok && result.success) {
-      alert(`✅ PDF sent successfully!\n\nEmailed to:\n• ${attorneyEmail}\n• ${OWNER_EMAIL}`);
-      // Also trigger print for local copy
-      window.print();
-    } else {
-      throw new Error(result.error || 'Failed to send PDF');
-    }
+    alert(`✅ Workbook sent successfully!\n\nEmailed to:\n• ${attorneyEmail}\n• ${OWNER_EMAIL}`);
+    // Also trigger print for local copy
+    window.print();
   } catch (error) {
     console.error('Export error:', error);
-    alert(`⚠️ Email delivery failed: ${error.message}\n\nPrinting local copy instead...`);
+    alert(`⚠️ Email delivery failed: ${error.text || error.message}\n\nPrinting local copy instead...`);
     window.print();
   } finally {
     btn.textContent = originalText;
