@@ -171,7 +171,7 @@ serve(async (req) => {
           }
         ],
         from: {
-          email: "workbook@alanredmond.com",
+          email: "alanredmond23@gmail.com",
           name: "Attorney Workbook"
         },
         content: [
