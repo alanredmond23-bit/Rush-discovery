@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -140,8 +140,8 @@ serve(async (req) => {
   }
 
   try {
-    if (!RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY not configured");
+    if (!SENDGRID_API_KEY) {
+      throw new Error("SENDGRID_API_KEY not configured");
     }
 
     const { attorneyEmail, ownerEmail, formData, timestamp }: WorkbookData = await req.json();
@@ -153,22 +153,39 @@ serve(async (req) => {
     // Generate the HTML email content
     const htmlContent = generateEmailHTML(formData);
 
-    // Send email via Resend
-    const emailResponse = await fetch("https://api.resend.com/emails", {
+    // Send email via SendGrid
+    const emailResponse = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Attorney Workbook <workbook@resend.dev>",
-        to: [attorneyEmail, ownerEmail],
-        subject: `Attorney Workbook - Pre-Meeting Prep (${new Date(timestamp).toLocaleDateString()})`,
-        html: htmlContent,
+        personalizations: [
+          {
+            to: [
+              { email: attorneyEmail },
+              { email: ownerEmail }
+            ],
+            subject: `Attorney Workbook - Pre-Meeting Prep (${new Date(timestamp).toLocaleDateString()})`
+          }
+        ],
+        from: {
+          email: "workbook@alanredmond.com",
+          name: "Attorney Workbook"
+        },
+        content: [
+          {
+            type: "text/html",
+            value: htmlContent
+          }
+        ],
         attachments: [
           {
-            filename: `Attorney_Workbook_${new Date(timestamp).toISOString().split("T")[0]}.html`,
             content: btoa(htmlContent),
+            filename: `Attorney_Workbook_${new Date(timestamp).toISOString().split("T")[0]}.html`,
+            type: "text/html",
+            disposition: "attachment"
           }
         ]
       }),
@@ -176,13 +193,11 @@ serve(async (req) => {
 
     if (!emailResponse.ok) {
       const errorText = await emailResponse.text();
-      throw new Error(`Resend API error: ${errorText}`);
+      throw new Error(`SendGrid API error: ${errorText}`);
     }
 
-    const result = await emailResponse.json();
-
     return new Response(
-      JSON.stringify({ success: true, messageId: result.id }),
+      JSON.stringify({ success: true, message: "Email sent successfully" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
