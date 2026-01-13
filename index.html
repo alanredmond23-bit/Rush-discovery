@@ -38,6 +38,22 @@ body {
   z-index: 9999;
 }
 #password-gate.hidden { display: none; }
+#email-gate {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--navy) 0%, #1a4d80 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+#email-gate.hidden { display: none; }
+.required-star { color: var(--red); font-weight: bold; }
+input:invalid, textarea:invalid { border-color: #ffcccc; }
+input:required, textarea:required { border-left: 3px solid var(--red); }
 .password-box {
   background: white;
   padding: 40px 50px;
@@ -493,6 +509,19 @@ textarea { min-height: 80px; resize: vertical; }
   </div>
 </div>
 
+<!-- EMAIL CAPTURE (after password, before main content) -->
+<div id="email-gate" class="hidden">
+  <div class="password-box" style="max-width: 450px;">
+    <div class="lock-icon">📧</div>
+    <h1>Before You Begin</h1>
+    <p class="subtitle">Enter your email to receive a copy of this workbook</p>
+    <input type="email" id="attorney-email" placeholder="Your Email Address *" required>
+    <p style="font-size: 11px; color: #666; margin: 10px 0;">A PDF copy will be sent to you and the client when you export.</p>
+    <button onclick="captureEmail()">Continue to Workbook</button>
+    <p class="password-error" id="email-error">Please enter a valid email address.</p>
+  </div>
+</div>
+
 <!-- MAIN CONTENT (hidden until password entered) -->
 <div id="main-content">
 <div class="container">
@@ -577,16 +606,16 @@ textarea { min-height: 80px; resize: vertical; }
 
       <div class="field-row">
         <div class="field-group">
-          <label>Meeting Date</label>
-          <input type="text" name="meeting_date" value="Wednesday, January 14, 2026">
+          <label>Meeting Date <span class="required-star">*</span></label>
+          <input type="text" required name="meeting_date" value="Wednesday, January 14, 2026">
         </div>
         <div class="field-group">
-          <label>Current Trial Date</label>
-          <input type="text" name="current_trial" value="April 2026">
+          <label>Current Trial Date <span class="required-star">*</span></label>
+          <input type="text" required name="current_trial" value="April 2026">
         </div>
         <div class="field-group">
-          <label>Target Continuance</label>
-          <input type="text" name="target_continuance" placeholder="April 2027 (12 months)" value="April 2027 (12 months from current date)">
+          <label>Target Continuance <span class="required-star">*</span></label>
+          <input type="text" required name="target_continuance" placeholder="April 2027 (12 months)" value="April 2027 (12 months from current date)">
         </div>
       </div>
 
@@ -604,23 +633,23 @@ textarea { min-height: 80px; resize: vertical; }
           <p><strong>Mathematical reality:</strong> Audio review = 3x real-time. Millions of calls is IMPOSSIBLE in months. Even sampling protocol requires 6+ months. Investigation asymmetry: Gov't had 2.5 YEARS; defense has had months.</p>
         </div>
         <div class="field-group">
-          <label>Minimum acceptable continuance duration</label>
-          <input type="text" name="min_continuance" placeholder="e.g., 12 MONTHS primary (April 2027), 6 MONTHS fallback, 90 DAYS floor" value="12 months (April 2027) primary; 6 months (October 2026) fallback; 90 days floor">
+          <label>Minimum acceptable continuance duration <span class="required-star">*</span></label>
+          <input type="text" required name="min_continuance" placeholder="e.g., 12 MONTHS primary (April 2027), 6 MONTHS fallback, 90 DAYS floor" value="12 months (April 2027) primary; 6 months (October 2026) fallback; 90 days floor">
         </div>
         <div class="field-group">
-          <label>Justification talking points</label>
-          <textarea name="continuance_justification" placeholder="- Voluminous discovery (27 counts)&#10;- Expert witness retention&#10;- Complexity of superseding indictment&#10;- Need to review Groff materials"></textarea>
+          <label>Justification talking points <span class="required-star">*</span></label>
+          <textarea required name="continuance_justification" placeholder="- Voluminous discovery (27 counts)&#10;- Expert witness retention&#10;- Complexity of superseding indictment&#10;- Need to review Groff materials"></textarea>
         </div>
       </div>
 
       <div class="two-col">
         <div class="subsection">
           <div class="subsection-title">OBJECTIVE 2: Intel Gathering</div>
-          <textarea name="intel_goals" placeholder="What do we want to learn?&#10;- How confident are they with Groff?&#10;- What's their trial posture?&#10;- Are they open to negotiation?&#10;- What do they think they have?"></textarea>
+          <textarea required name="intel_goals" placeholder="What do we want to learn?&#10;- How confident are they with Groff?&#10;- What's their trial posture?&#10;- Are they open to negotiation?&#10;- What do they think they have?"></textarea>
         </div>
         <div class="subsection">
           <div class="subsection-title">Walk-Away Line</div>
-          <textarea name="walk_away" placeholder="When do we end the meeting?&#10;- Continuance < 60 days&#10;- Demand proffer today&#10;- Refuse discovery discussion"></textarea>
+          <textarea required name="walk_away" placeholder="When do we end the meeting?&#10;- Continuance < 60 days&#10;- Demand proffer today&#10;- Refuse discovery discussion"></textarea>
         </div>
       </div>
     </div>
@@ -676,13 +705,13 @@ textarea { min-height: 80px; resize: vertical; }
       </div>
 
       <div class="field-group">
-        <label>Specific Groff vulnerabilities to mention (without revealing full attack)</label>
-        <textarea name="groff_vulnerabilities" placeholder="What can we hint at to make them worry about relying on Groff?&#10;&#10;e.g., 'We have significant concerns about your cooperator's credibility that will be fully explored at trial...'"></textarea>
+        <label>Specific Groff vulnerabilities to mention <span class="required-star">*</span></label>
+        <textarea required name="groff_vulnerabilities" placeholder="What can we hint at to make them worry about relying on Groff?&#10;&#10;e.g., 'We have significant concerns about your cooperator's credibility that will be fully explored at trial...'"></textarea>
       </div>
 
       <div class="field-group">
-        <label>Questions to ask about Groff materials</label>
-        <textarea name="groff_questions" placeholder="- When can we see Groff's 302s?&#10;- What proffer sessions has he done?&#10;- Has he testified before the grand jury?&#10;- What's his cooperation agreement status?"></textarea>
+        <label>Questions to ask about Groff materials <span class="required-star">*</span></label>
+        <textarea required name="groff_questions" placeholder="- When can we see Groff's 302s?&#10;- What proffer sessions has he done?&#10;- Has he testified before the grand jury?&#10;- What's his cooperation agreement status?"></textarea>
       </div>
     </div>
 
@@ -777,13 +806,13 @@ textarea { min-height: 80px; resize: vertical; }
       </div>
 
       <div class="field-group">
-        <label>Specific discovery items to emphasize</label>
-        <textarea name="specific_discovery" placeholder="What specific documents are most important to demand?&#10;&#10;- Groff's grand jury testimony&#10;- Agent rough notes (not just 302s)&#10;- All documents showing Redmond compliance/good faith"></textarea>
+        <label>Specific discovery items to emphasize <span class="required-star">*</span></label>
+        <textarea required name="specific_discovery" placeholder="What specific documents are most important to demand?&#10;&#10;- Groff's grand jury testimony&#10;- Agent rough notes (not just 302s)&#10;- All documents showing Redmond compliance/good faith"></textarea>
       </div>
 
       <div class="field-group">
-        <label>Timeline demands</label>
-        <textarea name="discovery_timeline" placeholder="When do we need this by? Create urgency.&#10;&#10;e.g., 'We need all Brady/Giglio within 30 days or we'll file motion to compel'"></textarea>
+        <label>Timeline demands <span class="required-star">*</span></label>
+        <textarea required name="discovery_timeline" placeholder="When do we need this by? Create urgency.&#10;&#10;e.g., 'We need all Brady/Giglio within 30 days or we'll file motion to compel'"></textarea>
       </div>
     </div>
 
@@ -823,59 +852,59 @@ textarea { min-height: 80px; resize: vertical; }
           <tr>
             <td><span class="scenario-num">1</span></td>
             <td>"No continuance without proffer"</td>
-            <td><textarea name="resp_1" placeholder="Redirect: 'We're happy to discuss cooperation framework, but need adequate time to prepare. Let's establish timeline...'"></textarea></td>
+            <td><textarea required name="resp_1" placeholder="Redirect: 'We're happy to discuss cooperation framework, but need adequate time to prepare. Let's establish timeline...'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">2</span></td>
             <td>"Only 30/60/90 days"</td>
-            <td><textarea name="resp_2" placeholder="'This case has MORE discovery than January 6 Capitol cases which got 12-24 month delays. We have millions of audio files—mathematically impossible to review in months. We need 12 months minimum, 6 months fallback.'"></textarea></td>
+            <td><textarea required name="resp_2" placeholder="'This case has MORE discovery than January 6 Capitol cases which got 12-24 month delays. We have millions of audio files—mathematically impossible to review in months. We need 12 months minimum, 6 months fallback.'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">3</span></td>
             <td>"We have Groff - don't need you"</td>
-            <td><textarea name="resp_3" placeholder="Signal Groff problems: 'You may want to evaluate your cooperator's credibility more carefully before trial...'"></textarea></td>
+            <td><textarea required name="resp_3" placeholder="Signal Groff problems: 'You may want to evaluate your cooperator's credibility more carefully before trial...'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">4</span></td>
             <td>"Proffer today or nothing"</td>
-            <td><textarea name="resp_4" placeholder="'We're not prepared to proffer without seeing discovery. Let's focus on the continuance.'"></textarea></td>
+            <td><textarea required name="resp_4" placeholder="'We're not prepared to proffer without seeing discovery. Let's focus on the continuance.'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">5</span></td>
             <td>"Standard Queen for a Day only"</td>
-            <td><textarea name="resp_5" placeholder="Stall: 'We'll need to review any proposed agreement carefully. Can you send written terms?'"></textarea></td>
+            <td><textarea required name="resp_5" placeholder="Stall: 'We'll need to review any proposed agreement carefully. Can you send written terms?'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">6</span></td>
             <td>"What can your client offer?"</td>
-            <td><textarea name="resp_6" placeholder="Vague carrot: 'Potentially significant information, but we need to see what you have first...'"></textarea></td>
+            <td><textarea required name="resp_6" placeholder="Vague carrot: 'Potentially significant information, but we need to see what you have first...'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">7</span></td>
             <td>"Trial proceeds in April"</td>
-            <td><textarea name="resp_7" placeholder="Raise discovery issues: 'We'll need all Brady/Giglio immediately then. And we're filing Franks...'"></textarea></td>
+            <td><textarea required name="resp_7" placeholder="Raise discovery issues: 'We'll need all Brady/Giglio immediately then. And we're filing Franks...'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">8</span></td>
             <td>"What about cooperation credit?"</td>
-            <td><textarea name="resp_8" placeholder="Deflect: 'Let's see what the evidence shows first. We have concerns about the affidavit...'"></textarea></td>
+            <td><textarea required name="resp_8" placeholder="Deflect: 'Let's see what the evidence shows first. We have concerns about the affidavit...'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">9</span></td>
             <td>"We need him to testify against X"</td>
-            <td><textarea name="resp_9" placeholder="'That's a significant ask. We'd need substantial consideration. Let's discuss continuance first.'"></textarea></td>
+            <td><textarea required name="resp_9" placeholder="'That's a significant ask. We'd need substantial consideration. Let's discuss continuance first.'"></textarea></td>
           </tr>
           <tr>
             <td><span class="scenario-num">10</span></td>
             <td>"What's your client's version?"</td>
-            <td><textarea name="resp_10" placeholder="DO NOT ANSWER. 'We're not prepared to proffer today. Let's establish a framework first.'"></textarea></td>
+            <td><textarea required name="resp_10" placeholder="DO NOT ANSWER. 'We're not prepared to proffer today. Let's establish a framework first.'"></textarea></td>
           </tr>
         </tbody>
       </table>
 
       <div class="field-group">
-        <label>Other scenarios to prepare for</label>
-        <textarea name="other_scenarios" placeholder="What else might they say? How do we respond while staying on objective?"></textarea>
+        <label>Other scenarios to prepare for <span class="required-star">*</span></label>
+        <textarea required name="other_scenarios" placeholder="What else might they say? How do we respond while staying on objective?"></textarea>
       </div>
     </div>
 
@@ -891,19 +920,19 @@ textarea { min-height: 80px; resize: vertical; }
         <div class="intel-grid">
           <div class="intel-card">
             <h5>Their Trial Posture</h5>
-            <textarea name="intel_trial" placeholder="- How set are they on April trial?&#10;- Open to resolution?&#10;- Confident or nervous?"></textarea>
+            <textarea required name="intel_trial" placeholder="- How set are they on April trial?&#10;- Open to resolution?&#10;- Confident or nervous?"></textarea>
           </div>
           <div class="intel-card">
             <h5>Groff Reliance</h5>
-            <textarea name="intel_groff" placeholder="- How central is Groff?&#10;- What has he given them?&#10;- Any hesitation about him?"></textarea>
+            <textarea required name="intel_groff" placeholder="- How central is Groff?&#10;- What has he given them?&#10;- Any hesitation about him?"></textarea>
           </div>
           <div class="intel-card">
             <h5>Discovery Status</h5>
-            <textarea name="intel_discovery" placeholder="- What's still outstanding?&#10;- Timeline for production?&#10;- Brady/Giglio timing?"></textarea>
+            <textarea required name="intel_discovery" placeholder="- What's still outstanding?&#10;- Timeline for production?&#10;- Brady/Giglio timing?"></textarea>
           </div>
           <div class="intel-card">
             <h5>Negotiation Signals</h5>
-            <textarea name="intel_negotiate" placeholder="- Any flexibility on charges?&#10;- Sentencing expectations?&#10;- Open to alternatives?"></textarea>
+            <textarea required name="intel_negotiate" placeholder="- Any flexibility on charges?&#10;- Sentencing expectations?&#10;- Open to alternatives?"></textarea>
           </div>
         </div>
       </div>
@@ -912,16 +941,16 @@ textarea { min-height: 80px; resize: vertical; }
         <div class="subsection-title">Meeting Logistics</div>
         <div class="field-row">
           <div class="field-group">
-            <label>Location</label>
-            <input type="text" name="location" placeholder="US Attorney's Office, EDPA">
+            <label>Location <span class="required-star">*</span></label>
+            <input type="text" required name="location" placeholder="US Attorney's Office, EDPA">
           </div>
           <div class="field-group">
-            <label>Time</label>
-            <input type="text" name="time">
+            <label>Time <span class="required-star">*</span></label>
+            <input type="text" required name="time">
           </div>
           <div class="field-group">
-            <label>AUSA</label>
-            <input type="text" name="ausa">
+            <label>AUSA <span class="required-star">*</span></label>
+            <input type="text" required name="ausa">
           </div>
         </div>
         <div class="field-row">
@@ -960,12 +989,12 @@ textarea { min-height: 80px; resize: vertical; }
         </ul>
         <div class="field-row">
           <div class="field-group">
-            <label>Client Signature</label>
-            <input type="text" name="client_sig" placeholder="Type name to authorize">
+            <label>Client Signature <span class="required-star">*</span></label>
+            <input type="text" required name="client_sig" placeholder="Type name to authorize">
           </div>
           <div class="field-group">
-            <label>Date</label>
-            <input type="date" name="sig_date">
+            <label>Date <span class="required-star">*</span></label>
+            <input type="date" required name="sig_date">
           </div>
         </div>
       </div>
@@ -986,12 +1015,16 @@ textarea { min-height: 80px; resize: vertical; }
 <script>
 // Password protection
 const PASSWORD = 'jan14meeting';
+const OWNER_EMAIL = 'alanredmond23@gmail.com';
+const SUPABASE_URL = 'https://fifybuzwfaegloijrmqb.supabase.co';
+let attorneyEmail = '';
 
 function checkPassword() {
   const input = document.getElementById('password-input').value;
   if (input === PASSWORD) {
     document.getElementById('password-gate').classList.add('hidden');
-    document.getElementById('main-content').classList.add('visible');
+    // Show email gate instead of main content
+    document.getElementById('email-gate').classList.remove('hidden');
     sessionStorage.setItem('authenticated', 'true');
   } else {
     document.getElementById('password-error').classList.add('show');
@@ -1000,14 +1033,46 @@ function checkPassword() {
   }
 }
 
+function captureEmail() {
+  const emailInput = document.getElementById('attorney-email');
+  const email = emailInput.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!email || !emailRegex.test(email)) {
+    document.getElementById('email-error').classList.add('show');
+    emailInput.focus();
+    return;
+  }
+
+  attorneyEmail = email;
+  sessionStorage.setItem('attorneyEmail', email);
+  document.getElementById('email-gate').classList.add('hidden');
+  document.getElementById('main-content').classList.add('visible');
+}
+
 document.getElementById('password-input').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') checkPassword();
+});
+
+document.getElementById('attorney-email').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') captureEmail();
+});
+
+document.getElementById('attorney-email').addEventListener('input', function() {
+  document.getElementById('email-error').classList.remove('show');
 });
 
 // Check if already authenticated this session
 if (sessionStorage.getItem('authenticated') === 'true') {
   document.getElementById('password-gate').classList.add('hidden');
-  document.getElementById('main-content').classList.add('visible');
+  const savedEmail = sessionStorage.getItem('attorneyEmail');
+  if (savedEmail) {
+    attorneyEmail = savedEmail;
+    document.getElementById('email-gate').classList.add('hidden');
+    document.getElementById('main-content').classList.add('visible');
+  } else {
+    document.getElementById('email-gate').classList.remove('hidden');
+  }
 }
 
 // Main workbook logic
@@ -1028,15 +1093,101 @@ function updateUI() {
   document.getElementById('prevBtn').style.visibility = currentPage === 1 ? 'hidden' : 'visible';
   const nextBtn = document.getElementById('nextBtn');
   if (currentPage === totalPages) {
-    nextBtn.textContent = 'Export PDF';
+    nextBtn.textContent = 'Export & Send PDF';
     nextBtn.className = 'btn btn-export';
-    nextBtn.onclick = () => window.print();
+    nextBtn.onclick = exportAndSendPDF;
   } else {
     nextBtn.textContent = 'Next';
     nextBtn.className = 'btn btn-next';
     nextBtn.onclick = () => changePage(1);
   }
   document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+}
+
+// Validate all required fields before export
+function validateForm() {
+  const requiredFields = document.querySelectorAll('[required]');
+  let allValid = true;
+  let firstInvalid = null;
+
+  requiredFields.forEach(field => {
+    if (!field.value.trim()) {
+      field.style.borderColor = 'var(--red)';
+      allValid = false;
+      if (!firstInvalid) firstInvalid = field;
+    } else {
+      field.style.borderColor = '';
+    }
+  });
+
+  if (!allValid && firstInvalid) {
+    // Navigate to the page with the first invalid field
+    const page = firstInvalid.closest('.page');
+    if (page) {
+      currentPage = parseInt(page.dataset.page);
+      updateUI();
+    }
+    firstInvalid.focus();
+    alert('Please complete all required fields (marked with *) before exporting.');
+  }
+
+  return allValid;
+}
+
+// Export and send PDF via Supabase Edge Function
+async function exportAndSendPDF() {
+  if (!validateForm()) return;
+
+  const btn = document.getElementById('nextBtn');
+  const originalText = btn.textContent;
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  // Collect all form data
+  const formData = {};
+  document.querySelectorAll('input, textarea').forEach(el => {
+    if (el.name) {
+      if (el.type === 'checkbox') formData[el.name] = el.checked;
+      else if (el.type === 'radio') { if (el.checked) formData[el.name] = el.value; }
+      else formData[el.name] = el.value;
+    }
+  });
+
+  // Get the HTML content for PDF
+  const mainContent = document.getElementById('main-content').innerHTML;
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/send-workbook-pdf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        attorneyEmail: attorneyEmail,
+        ownerEmail: OWNER_EMAIL,
+        formData: formData,
+        htmlContent: mainContent,
+        timestamp: new Date().toISOString()
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      alert(`✅ PDF sent successfully!\n\nEmailed to:\n• ${attorneyEmail}\n• ${OWNER_EMAIL}`);
+      // Also trigger print for local copy
+      window.print();
+    } else {
+      throw new Error(result.error || 'Failed to send PDF');
+    }
+  } catch (error) {
+    console.error('Export error:', error);
+    alert(`⚠️ Email delivery failed: ${error.message}\n\nPrinting local copy instead...`);
+    window.print();
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
 }
 
 function changePage(direction) {
